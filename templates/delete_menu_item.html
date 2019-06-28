@@ -1,0 +1,9 @@
+<html>
+<body>
+    <form method='POST' action='{{url_for('deleteMenuItem', restaurant_id=restaurant_id, menu_id=menu_id)}}'>
+        <label for="submit">Really delete {{item.name}} from the menu permanently?</label>
+        <input type="submit" value="Delete!" />
+    </form>
+    <a href = {{url_for('restaurant_menu', restaurant_id=restaurant_id)}}>Cancel</a>
+</body>
+</html>
