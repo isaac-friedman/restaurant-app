@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from flask import Flask, request, render_template, flash
+from flask import Flask, request, render_template, url_for, redirect, flash
 
 from database_setup import Base, Restaurant, MenuItem
 from sqlalchemy import create_engine
@@ -46,21 +46,29 @@ def all_menus():
     return output
 
 @app.route('/restaurants/<int:restaurant_id>/')
-def restaurant_menu(restaurant_id):
+def restaurantMenu(restaurant_id):
     restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
     items = session.query(MenuItem).filter_by(restaurant_id=restaurant.id)
     return render_template("menu.html",restaurant=restaurant, items=items)
 
-@app.route('/restaurants/menus/<int:restaurant_id>/new/')
+@app.route('/restaurants/menus/<int:restaurant_id>/new/',
+  methods=['GET', 'POST'])
 def newMenuItem(restaurant_id):
-    newItem = MenuItem(name=request.form['name'], description=request.form[
-                           'description'], price=request.form['price'], course=request.form['course'], restaurant_id=restaurant_id)
+    print("Processing a {0} request".format(request.method))
+    if request.method == 'POST':
+        print("creating new menu item")
+        newItem = MenuItem(name=request.form['name'], \
+          description=request.form['description'],\
+          price=request.form['price'], \
+          course=request.form['course'], \
+          restaurant_id=restaurant_id)
         session.add(newItem)
         session.commit()
-        flash("new menu item created!")
+        # flash("new menu item created!")
         return redirect(url_for('restaurantMenu', restaurant_id=restaurant_id))
     else:
-return render_template('newmenuitem.html', restaurant_id=restaurant_id)
+        print("Never entered the form logic")
+        return render_template('new_menu_item.html', restaurant_id=restaurant_id)
 
 @app.route('/restaurants/menus/<int:restaurant_id>/<int:menu_id>/edit/',
   methods = ['GET', 'POST'])
@@ -74,25 +82,27 @@ def editMenuItem(restaurant_id, menu_id):
             item.description = request.form['description']
             session.add(item)
             session.commit()
+            # flash("Successfully changed {0}".format(item.name))
             return redirect(url_for('restaurantMenu', restaurant_id=restaurant_id))
     print(item)
     return render_template("edit_menu.html", restaurant_id=restaurant_id,
       menu_id=menu_id, item=item)
 
-@app.route('/restaurants/menus/<int:restaurant_id>/<int:menu_id>/delete/')
+@app.route('/restaurants/menus/<int:restaurant_id>/<int:menu_id>/delete/',
+  methods = ['GET', 'POST'])
 def deleteMenuItem(restaurant_id, menu_id):
     item=session.query(MenuItem).filter_by(id=menu_id).one()
     if request.method == 'POST':
-        print(request)
-        if request.form['name']:
-            item.id = request.form['ID']
-            session.delete(item)
-            session.commit()
-            return redirect(url_for('restaurantMenu', restaurant_id=restaurant_id))
+        session.delete(item)
+        session.commit()
+        # flash("Successfully removed {0}".format(request.form['name']))
+        return redirect(url_for('restaurantMenu', restaurant_id=restaurant_id))
     print(item)
     return render_template("delete_menu_item.html", restaurant_id=restaurant_id,
       menu_id=menu_id, item=item)
 
 if __name__ == '__main__':
+    app.secret_key = '''One day a randomly generated 128-bit string
+      will go here. Well, not *here* here because we'll use OAuth'''
     app.debug = True
     app.run(host='0.0.0.0', port=5000)
