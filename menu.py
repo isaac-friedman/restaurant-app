@@ -64,7 +64,7 @@ def newMenuItem(restaurant_id):
           restaurant_id=restaurant_id)
         session.add(newItem)
         session.commit()
-        # flash("new menu item created!")
+        flash("new menu item created!")
         return redirect(url_for('restaurantMenu', restaurant_id=restaurant_id))
     else:
         print("Never entered the form logic")
@@ -82,7 +82,7 @@ def editMenuItem(restaurant_id, menu_id):
             item.description = request.form['description']
             session.add(item)
             session.commit()
-            # flash("Successfully changed {0}".format(item.name))
+            flash("Successfully changed {0}".format(item.name))
             return redirect(url_for('restaurantMenu', restaurant_id=restaurant_id))
     print(item)
     return render_template("edit_menu.html", restaurant_id=restaurant_id,
@@ -95,7 +95,7 @@ def deleteMenuItem(restaurant_id, menu_id):
     if request.method == 'POST':
         session.delete(item)
         session.commit()
-        # flash("Successfully removed {0}".format(request.form['name']))
+        flash("Successfully removed {0}".format(request.form['name']))
         return redirect(url_for('restaurantMenu', restaurant_id=restaurant_id))
     print(item)
     return render_template("delete_menu_item.html", restaurant_id=restaurant_id,
