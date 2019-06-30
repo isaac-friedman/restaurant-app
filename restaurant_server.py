@@ -119,7 +119,8 @@ class webServerHandler(BaseHTTPRequestHandler):
                           a link."""
             if self.path.endswith("/delete"):
                 print("Deleting...")
-                ctype, pdict = cgi.parse_header(self.headers.getheader('Content-type'))
+                ctype, pdict\
+                  = cgi.parse_header(self.headers.getheader('Content-type'))
                 if ctype == 'multipart/form-data':
                     fields = cgi.parse_multipart(self.rfile, pdict)
                     new_name = fields.get('restaurant')
@@ -134,7 +135,8 @@ class webServerHandler(BaseHTTPRequestHandler):
                     self.end_headers()
             if self.path.endswith("/new"):
                 print("nuuuuuu")
-                ctype, pdict = cgi.parse_header(self.headers.getheader('Content-type'))
+                ctype, pdict \
+                  = cgi.parse_header(self.headers.getheader('Content-type'))
                 if ctype == 'multipart/form-data':
                     fields = cgi.parse_multipart(self.rfile, pdict)
                     form_content = fields.get('restaurant')
@@ -148,7 +150,15 @@ class webServerHandler(BaseHTTPRequestHandler):
             print("DOINK!")
             print("Error e: {0}".format(e))
 
-
+        @property
+        def serialize(self):
+            return {
+                'id' : self.id,
+                'name' : self.name,
+                'course' : self.course
+                'description' : self.description
+                'price' : self.price
+            }
 def main():
     try:
         port = 8000
