@@ -6,6 +6,8 @@ from database_setup import Base, Restaurant, MenuItem
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from flask_sqlalchemy import SQLAlchemy
+from flask import session as login_session
+import random, string
 
 app = Flask(__name__)
 
@@ -14,6 +16,13 @@ engine = create_engine('sqlite:///restaurantmenu.db?check_same_thread=False')
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
+
+# logins
+@app.route('/login')
+def showLogin():
+    state = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for x in xrange(32))
+    login_session['state'] = state
+    return "The current session state is {0}".format(login_session['state'])
 
 #API endpoint for GET request
 @app.route('/restaurants/<int:restaurant_id>/menu/JSON')
